@@ -28,7 +28,7 @@ func main() {
 	verifier := service.NewVerifier(apiClient, reqQueue)
 	// handler
 	server := grpcserver.NewServer(verifier)
-	listener, err := net.Listen("tcp", ":50051")
+	listener, err := net.Listen("tcp", "127.0.0.1:50051")
 	if err != nil {
 		log.Fatalf("failed to listen: %v", err)
 	}
