@@ -2,7 +2,7 @@ syntax = "proto3";
 
 package apex;
 
-option go_package = "github.com/rzhaka-turiki/apex-_account_verifier/proto/apexpb";
+option go_package = "github.com/rzhaka-turiki/apex_account_verifier/proto/apexpb";
 
 service ApexVerifier {
     rpc VerifyAccount(VerifyAccountRequest)
@@ -17,8 +17,7 @@ message VerifyAccountRequest {
 
 message VerifyAccountResponse {
     string uid = 1;
-    string nid_hash = 2;
-    string player = 3;
-    string platform = 4;
-    int32 level = 5;
+    string player = 2;
+    string platform = 3;
+    int32 level = 4;
 }
