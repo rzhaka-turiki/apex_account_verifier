@@ -24,7 +24,7 @@ func main() {
 		log.Fatal("APEX_API_AUTH_TOKEN is not set")
 	}
 	apiClient := api.NewClient(baseURL, authToken)
-	reqQueue := queue.NewQueue(10000, 5, 5)
+	reqQueue := queue.NewQueue(10000, 5, 4)
 	verifier := service.NewVerifier(apiClient, reqQueue)
 	// handler
 	server := grpcserver.NewServer(verifier)
