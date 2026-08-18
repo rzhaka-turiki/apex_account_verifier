@@ -1,0 +1,11 @@
+.git
+.github
+.env
+.env.*
+*.md
+
+load-test-results
+load-test.ps1
+
+tmp
+bin
