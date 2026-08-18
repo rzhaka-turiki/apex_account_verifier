@@ -2,7 +2,7 @@ syntax = "proto3";
 
 package apex;
 
-option go_package = "github.com/rzhaka-turiki/apex_account_verifier/proto/apexpb";
+option go_package = "github.com/rzhaka-turiki/apex_account_verifier/proto/apexpb;apexpb";
 
 service ApexVerifier {
     rpc VerifyAccount(VerifyAccountRequest)

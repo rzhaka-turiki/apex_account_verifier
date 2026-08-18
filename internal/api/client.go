@@ -4,8 +4,10 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"io"
 	"net/http"
 
+	"github.com/rzhaka-turiki/apex_account_verifier/internal/dto"
 	"github.com/rzhaka-turiki/apex_account_verifier/internal/model"
 )
 
@@ -23,20 +25,25 @@ func NewClient(baseURL, authToken string) *Client {
 	}
 }
 
-type bridgeResponse struct {
-	Global struct {
-		UID      string `json:"uid"`
-		Name     string `json:"name"`
-		Platform string `json:"platform"`
-		Level    int    `json:"level"`
-	} `json:"global"`
+type APIError struct {
+	StatusCode int
+}
+
+func (e *APIError) Error() string {
+	return fmt.Sprintf("apex api returned %d", e.StatusCode)
 }
 
 func (c *Client) GetAccount(ctx context.Context, player, platform string) (*model.Account, error) {
-	req, err := http.NewRequestWithContext(ctx, http.MethodGet, c.baseURL, nil)
+	req, err := http.NewRequestWithContext(
+		ctx,
+		http.MethodGet,
+		c.baseURL,
+		nil,
+	)
 	if err != nil {
 		return nil, err
 	}
+
 	q := req.URL.Query()
 	q.Set("auth", c.authToken)
 	q.Set("player", player)
@@ -44,25 +51,53 @@ func (c *Client) GetAccount(ctx context.Context, player, platform string) (*mode
 
 	req.URL.RawQuery = q.Encode()
 
+	fmt.Printf(
+		"REQUEST URL: %s?auth=***&player=%s&platform=%s\n",
+		c.baseURL,
+		player,
+		platform,
+	)
+
 	resp, err := c.http.Do(req)
 	if err != nil {
 		return nil, err
 	}
 	defer resp.Body.Close()
-	if resp.StatusCode != http.StatusOK {
-		return nil, fmt.Errorf("apex api returned %d", resp.StatusCode)
-	}
-	var data bridgeResponse
-	if err := json.NewDecoder(resp.Body).Decode(&data); err != nil {
+
+	body, err := io.ReadAll(resp.Body)
+	if err != nil {
 		return nil, err
 	}
+
+	if resp.StatusCode != http.StatusOK {
+		fmt.Printf("APEX STATUS: %d\n", resp.StatusCode)
+		fmt.Printf("APEX HEADERS: %v\n", resp.Header)
+		fmt.Printf("APEX BODY: %s\n", string(body))
+
+		return nil, &APIError{
+			StatusCode: resp.StatusCode,
+		}
+	}
+
+	var data dto.BridgeResponse
+
+	if err := json.Unmarshal(body, &data); err != nil {
+		return nil, err
+	}
+
 	if data.Global.UID == "" {
 		return nil, fmt.Errorf("account uid not found")
 	}
+
+	const levelsPerPrestige = 500
+
+	totalLevel := data.Global.Level +
+		data.Global.LevelPrestige*levelsPerPrestige
+
 	return &model.Account{
 		UID:      data.Global.UID,
 		Player:   data.Global.Name,
 		Platform: data.Global.Platform,
-		Level:    data.Global.Level,
+		Level:    totalLevel,
 	}, nil
 }

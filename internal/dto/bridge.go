@@ -1,6 +1,6 @@
 package dto
 
-type bridgeResponse struct {
+type BridgeResponse struct {
 	Global struct {
 		UID           string `json:"uid"`
 		Name          string `json:"name"`

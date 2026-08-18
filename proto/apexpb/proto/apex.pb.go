@@ -164,7 +164,7 @@ const file_proto_apex_proto_rawDesc = "" +
 	"\bplatform\x18\x03 \x01(\tR\bplatform\x12\x14\n" +
 	"\x05level\x18\x04 \x01(\x05R\x05level2X\n" +
 	"\fApexVerifier\x12H\n" +
-	"\rVerifyAccount\x12\x1a.apex.VerifyAccountRequest\x1a\x1b.apex.VerifyAccountResponseB=Z;github.com/rzhaka-turiki/apex_account_verifier/proto/apexpbb\x06proto3"
+	"\rVerifyAccount\x12\x1a.apex.VerifyAccountRequest\x1a\x1b.apex.VerifyAccountResponseBDZBgithub.com/rzhaka-turiki/apex_account_verifier/proto/apexpb;apexpbb\x06proto3"
 
 var (
 	file_proto_apex_proto_rawDescOnce sync.Once

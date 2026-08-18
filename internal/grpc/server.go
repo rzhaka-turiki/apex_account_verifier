@@ -1,10 +1,11 @@
-package grpc
+package grpcserver
 
 import (
 	"context"
 
+	apexpb "github.com/rzhaka-turiki/apex_account_verifier/proto/apexpb/proto"
+
 	"github.com/rzhaka-turiki/apex_account_verifier/internal/service"
-	"github.com/rzhaka-turiki/apex_account_verifier/proto/apexpb"
 )
 
 type Server struct {
@@ -16,7 +17,7 @@ func NewServer(verifier *service.Verifier) *Server {
 	return &Server{verifier: verifier}
 }
 
-func (s *Server) VerifyAccount(ctx context.Context, req apexpb.VerifyAccountRequest) (*apexpb.VerifyAccountResponse, error) {
+func (s *Server) VerifyAccount(ctx context.Context, req *apexpb.VerifyAccountRequest) (*apexpb.VerifyAccountResponse, error) {
 	account, err := s.verifier.VerifyAccount(ctx, req.GetPlayer(), req.GetPlatform(), int(req.GetLevel()))
 	if err != nil {
 		return nil, err
