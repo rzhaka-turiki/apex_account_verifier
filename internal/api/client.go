@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"io"
 	"net/http"
+	"time"
 
 	"github.com/rzhaka-turiki/apex_account_verifier/internal/dto"
 	"github.com/rzhaka-turiki/apex_account_verifier/internal/model"
@@ -21,7 +22,12 @@ func NewClient(baseURL, authToken string) *Client {
 	return &Client{
 		baseURL:   baseURL,
 		authToken: authToken,
-		http:      &http.Client{},
+		http: &http.Client{
+			Transport: &http.Transport{
+				TLSHandshakeTimeout: 10 * time.Second,
+			},
+			Timeout: 30 * time.Second,
+		},
 	}
 }
 
@@ -60,6 +66,7 @@ func (c *Client) GetAccount(ctx context.Context, player, platform string) (*mode
 
 	resp, err := c.http.Do(req)
 	if err != nil {
+		fmt.Printf("HTTP REQUEST ERROR: %v\n", err)
 		return nil, err
 	}
 	defer resp.Body.Close()
